@@ -50,6 +50,10 @@ const symptomMedicationGuides = [
   {
     match: /headache|migraine/i,
     intro: "For headache, these options may help if your checklist has no danger signs and the medicine is safe for you.",
+    causes: [
+      "Common causes include stress, poor sleep, dehydration, eye strain, sinus issues, or migraine.",
+      "More serious causes are possible if headache is sudden, severe, after injury, or comes with fever, weakness, confusion, or vision changes.",
+    ],
     medications: headacheMedications,
     precautions: headachePrecautions,
     tabletTimings: headacheTabletTimings,
@@ -57,6 +61,10 @@ const symptomMedicationGuides = [
   {
     match: /blood.*vomit|vomit.*blood|vomiting blood|vomtings blood/i,
     intro: "For blood vomiting, avoid home medication and get emergency help immediately.",
+    causes: [
+      "Possible causes include stomach ulcer bleeding, severe gastritis, liver-related vein bleeding, a tear after forceful vomiting, or blood-thinning medicines.",
+      "Because the cause can be internal bleeding, this needs emergency evaluation now.",
+    ],
     medications: bloodVomitingMedications,
     precautions: bloodVomitingPrecautions,
     tabletTimings: bloodVomitingTabletTimings,
@@ -64,6 +72,10 @@ const symptomMedicationGuides = [
   {
     match: /dizziness|vertigo|faint/i,
     intro: "For dizziness, focus first on hydration, rest, and checking for warning signs before taking tablets.",
+    causes: [
+      "Common causes include dehydration, skipped meals, low blood pressure, anemia, inner ear problems, anxiety, or medication side effects.",
+      "Urgent causes are possible if dizziness comes with chest pain, fainting, one-sided weakness, severe headache, or breathing trouble.",
+    ],
     medications: [
       "Oral rehydration solution or fluids may help dizziness linked to dehydration.",
       "Eat a light snack if dizziness may be related to skipped meals or low sugar.",
@@ -83,6 +95,10 @@ const symptomMedicationGuides = [
   {
     match: /fever|temperature/i,
     intro: "For fever, these options may reduce temperature while you monitor for serious symptoms.",
+    causes: [
+      "Common causes include viral infection, flu, throat infection, stomach infection, urinary infection, or heat illness.",
+      "Persistent high fever, rash, stiff neck, confusion, breathing trouble, or dehydration can suggest a serious infection.",
+    ],
     medications: [
       "Paracetamol/acetaminophen may reduce fever, following the package dose limits.",
       "Oral fluids or ORS help prevent dehydration during fever.",
@@ -102,6 +118,10 @@ const symptomMedicationGuides = [
   {
     match: /cough|cold|sore throat/i,
     intro: "For cough or cold symptoms, treatment depends on whether it is dry cough, phlegm, allergy, or infection.",
+    causes: [
+      "Common causes include viral cold, allergy, throat irritation, asthma, acid reflux, or chest infection.",
+      "Cough with blood, chest pain, shortness of breath, wheezing, or high fever needs medical review quickly.",
+    ],
     medications: [
       "Warm fluids, honey for adults, and saline gargles may ease throat irritation.",
       "A pharmacist can suggest a cough syrup based on dry cough or phlegm cough.",
@@ -121,6 +141,10 @@ const symptomMedicationGuides = [
   {
     match: /stomach|abdominal|diarrhea|loose motion/i,
     intro: "For stomach symptoms, hydration and food safety are usually more important than tablets at first.",
+    causes: [
+      "Common causes include indigestion, food poisoning, viral stomach infection, acidity, gas, constipation, or food intolerance.",
+      "Severe pain, blood in stool, repeated vomiting, high fever, pregnancy, or dehydration can point to a more serious cause.",
+    ],
     medications: [
       "ORS is preferred for loose motions or vomiting-related dehydration.",
       "Eat light foods and avoid oily, spicy, or heavy meals until symptoms settle.",
@@ -193,6 +217,10 @@ const Results = () => {
     `Medication suggestions for ${symptoms} should be confirmed by a licensed doctor or pharmacist before use.`,
     "Use simple supportive care like rest, fluids, and monitoring unless a clinician recommends a specific tablet.",
     "Avoid antibiotics, steroids, or strong painkillers without a prescription.",
+  ];
+  const possibleCauses = medicationGuide?.causes ?? [
+    `Possible causes of ${symptoms} can vary from mild issues like dehydration, infection, strain, or digestion problems to conditions that need medical care.`,
+    "A clinician can confirm the exact cause based on duration, severity, age, medical history, and examination.",
   ];
   const precautions = medicationGuide?.precautions ?? ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
   const tabletTimings = medicationGuide?.tabletTimings ?? defaultTabletTimings;
@@ -338,6 +366,14 @@ const Results = () => {
                 <p className="mb-4 text-sm leading-6 text-hero-slate/80">
                   {medicationIntro}
                 </p>
+                <div className="mb-5 rounded-[8px] border border-border bg-background/70 p-4">
+                  <h3 className="mb-3 font-geist text-base font-medium text-foreground">Possible causes</h3>
+                  <ul className="grid gap-2 text-sm leading-6 text-hero-slate/80">
+                    {possibleCauses.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
                 <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
                   {medications.map((item) => (
                     <li key={item}>{item}</li>
