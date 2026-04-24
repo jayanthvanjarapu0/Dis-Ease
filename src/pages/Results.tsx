@@ -46,6 +46,99 @@ const bloodVomitingTabletTimings = [
   "Call 108 or go to the nearest emergency department immediately.",
 ];
 
+const symptomMedicationGuides = [
+  {
+    match: /headache|migraine/i,
+    intro: "For headache, these options may help if your checklist has no danger signs and the medicine is safe for you.",
+    medications: headacheMedications,
+    precautions: headachePrecautions,
+    tabletTimings: headacheTabletTimings,
+  },
+  {
+    match: /blood.*vomit|vomit.*blood|vomiting blood|vomtings blood/i,
+    intro: "For blood vomiting, avoid home medication and get emergency help immediately.",
+    medications: bloodVomitingMedications,
+    precautions: bloodVomitingPrecautions,
+    tabletTimings: bloodVomitingTabletTimings,
+  },
+  {
+    match: /dizziness|vertigo|faint/i,
+    intro: "For dizziness, focus first on hydration, rest, and checking for warning signs before taking tablets.",
+    medications: [
+      "Oral rehydration solution or fluids may help dizziness linked to dehydration.",
+      "Eat a light snack if dizziness may be related to skipped meals or low sugar.",
+      "Do not take anti-vertigo tablets unless a doctor or pharmacist confirms they are safe for you.",
+    ],
+    precautions: [
+      "Sit or lie down until dizziness settles, and avoid driving or standing suddenly.",
+      "Seek urgent care for chest pain, fainting, one-sided weakness, severe headache, confusion, or breathing trouble.",
+      "Check blood pressure or blood sugar if you have hypertension or diabetes.",
+    ],
+    tabletTimings: [
+      "ORS/fluids: take small frequent sips over 1–2 hours if dehydration is possible.",
+      "Any dizziness tablet: use only as prescribed or advised by a licensed pharmacist.",
+      "If dizziness repeats or worsens, get a clinician review instead of repeating medicines.",
+    ],
+  },
+  {
+    match: /fever|temperature/i,
+    intro: "For fever, these options may reduce temperature while you monitor for serious symptoms.",
+    medications: [
+      "Paracetamol/acetaminophen may reduce fever, following the package dose limits.",
+      "Oral fluids or ORS help prevent dehydration during fever.",
+      "Avoid antibiotics unless prescribed after a clinician review.",
+    ],
+    precautions: [
+      "Seek urgent care for stiff neck, confusion, rash, breathing trouble, dehydration, or very high fever.",
+      "Do not combine multiple fever medicines without medical advice.",
+      "Use tepid sponging and light clothing; avoid ice baths.",
+    ],
+    tabletTimings: [
+      "Paracetamol: usually every 6–8 hours only if needed; do not exceed the package daily limit.",
+      "ORS/fluids: frequent small sips through the day.",
+      "If fever lasts more than 2–3 days or worsens, book a clinician review.",
+    ],
+  },
+  {
+    match: /cough|cold|sore throat/i,
+    intro: "For cough or cold symptoms, treatment depends on whether it is dry cough, phlegm, allergy, or infection.",
+    medications: [
+      "Warm fluids, honey for adults, and saline gargles may ease throat irritation.",
+      "A pharmacist can suggest a cough syrup based on dry cough or phlegm cough.",
+      "Avoid antibiotics unless prescribed by a clinician.",
+    ],
+    precautions: [
+      "Seek urgent care for shortness of breath, chest pain, wheezing, coughing blood, or high fever.",
+      "Avoid sedating cough syrups before driving or work that needs alertness.",
+      "Wear a mask and rest if fever or contagious symptoms are present.",
+    ],
+    tabletTimings: [
+      "Cough syrup/tablets: follow the label timing exactly or pharmacist advice.",
+      "Paracetamol for fever/body pain: usually every 6–8 hours only if needed within label limits.",
+      "Do not take multiple cold medicines together if they contain the same ingredient.",
+    ],
+  },
+  {
+    match: /stomach|abdominal|diarrhea|loose motion/i,
+    intro: "For stomach symptoms, hydration and food safety are usually more important than tablets at first.",
+    medications: [
+      "ORS is preferred for loose motions or vomiting-related dehydration.",
+      "Eat light foods and avoid oily, spicy, or heavy meals until symptoms settle.",
+      "Do not self-start antibiotics or strong anti-diarrhea tablets without clinician advice.",
+    ],
+    precautions: [
+      "Seek urgent care for severe belly pain, blood in stool, repeated vomiting, high fever, or dehydration.",
+      "Avoid painkillers like ibuprofen/naproxen if you have stomach pain or acidity unless advised.",
+      "Pregnancy, elderly age, or severe weakness needs earlier medical review.",
+    ],
+    tabletTimings: [
+      "ORS: small frequent sips after each loose motion or vomiting episode.",
+      "Antacid/anti-nausea tablets: only as advised by a pharmacist or clinician.",
+      "If symptoms continue beyond 24–48 hours or worsen, get medical care.",
+    ],
+  },
+];
+
 const defaultTabletTimings = [
   "For common over-the-counter medicines, follow the label timing exactly or ask a licensed pharmacist.",
   "Take tablets after food when the label says so, and avoid repeating doses early.",
@@ -92,21 +185,18 @@ const Results = () => {
     .split(/,| and /i)
     .map((symptom) => symptom.trim())
     .filter(Boolean);
-  const hasHeadache = symptomList.some((symptom) => symptom.toLowerCase().includes("headache"));
   const hasBloodVomiting = symptomList.some((symptom) => /blood|vomit|vomiting|vomtings|throwing up/i.test(symptom)) &&
     /blood/i.test(symptoms) &&
     /vomit|vomiting|vomtings|throwing up/i.test(symptoms);
-  const medications = hasHeadache
-    ? headacheMedications
-    : hasBloodVomiting
-      ? bloodVomitingMedications
-    : ["Medication suggestions appear here for supported symptoms. For now, use a licensed clinician or pharmacist for treatment choices."];
-  const precautions = hasHeadache
-    ? headachePrecautions
-    : hasBloodVomiting
-      ? bloodVomitingPrecautions
-    : ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
-  const tabletTimings = hasHeadache ? headacheTabletTimings : hasBloodVomiting ? bloodVomitingTabletTimings : defaultTabletTimings;
+  const medicationGuide = symptomMedicationGuides.find((group) => group.match.test(symptoms));
+  const medications = medicationGuide?.medications ?? [
+    `Medication suggestions for ${symptoms} should be confirmed by a licensed doctor or pharmacist before use.`,
+    "Use simple supportive care like rest, fluids, and monitoring unless a clinician recommends a specific tablet.",
+    "Avoid antibiotics, steroids, or strong painkillers without a prescription.",
+  ];
+  const precautions = medicationGuide?.precautions ?? ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
+  const tabletTimings = medicationGuide?.tabletTimings ?? defaultTabletTimings;
+  const medicationIntro = medicationGuide?.intro ?? `For ${symptoms}, medication choices depend on cause, age, allergies, and existing health conditions.`;
   const urgencyMessage = hasBloodVomiting
     ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
     : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
@@ -245,6 +335,9 @@ const Results = () => {
                   <Pill className="size-5 text-hero-tint" />
                   <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
                 </div>
+                <p className="mb-4 text-sm leading-6 text-hero-slate/80">
+                  {medicationIntro}
+                </p>
                 <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
                   {medications.map((item) => (
                     <li key={item}>{item}</li>
