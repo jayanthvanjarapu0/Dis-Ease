@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { AlertTriangle, ArrowLeft, ClipboardCheck, Pill, ShieldPlus, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -141,6 +141,43 @@ const Results = () => {
                 ))}
               </ul>
             </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+          variants={fadeUp}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="mb-3 flex items-center gap-3 text-hero-slate">
+                <MapPin className="size-5 text-hero-tint" />
+                <h2 className="font-geist text-xl font-medium text-foreground">Local hospitals near me</h2>
+              </div>
+              <p className="max-w-[720px] text-sm leading-6 text-hero-slate/80">
+                If this feels urgent, contact emergency services or go to the nearest emergency department immediately.
+              </p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Button asChild className="rounded-pill">
+                <a href="https://www.google.com/maps/search/hospitals+near+me" target="_blank" rel="noreferrer">
+                  <MapPin className="size-4" />
+                  Find hospitals
+                </a>
+              </Button>
+              <Button asChild variant="outline" className="rounded-pill">
+                <a href="tel:112">
+                  <Phone className="size-4" />
+                  Call emergency
+                </a>
+              </Button>
+            </div>
+          </div>
+          <div className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
+            <p>Use your phone maps to choose the closest open hospital or emergency room.</p>
+            <p>Do not drive yourself if you feel faint, confused, weak, or are actively bleeding/vomiting.</p>
+            <p>Bring your ID, medication list, allergies, and the symptom summary from this check.</p>
           </div>
         </motion.section>
 
