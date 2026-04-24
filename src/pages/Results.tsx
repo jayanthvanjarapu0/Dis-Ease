@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { AlertTriangle, ArrowLeft, ClipboardCheck, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ClipboardCheck, Pill, ShieldPlus, Stethoscope } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,18 @@ const fadeUp = {
   show: { opacity: 1, y: 0 },
 };
 
+const headacheMedications = [
+  "Paracetamol/acetaminophen for mild to moderate headache, following the package dose limits.",
+  "Ibuprofen or naproxen may help tension-type headaches if safe for you to take.",
+  "Oral rehydration, water, and rest can help when headache is linked to dehydration or fatigue.",
+];
+
+const headachePrecautions = [
+  "Avoid taking multiple pain relievers together unless a clinician says it is safe.",
+  "Do not use ibuprofen/naproxen with stomach ulcers, kidney disease, blood thinners, or late pregnancy unless advised.",
+  "Seek urgent care for sudden worst-ever headache, fever with stiff neck, weakness, confusion, vision loss, head injury, or repeated vomiting.",
+];
+
 const Results = () => {
   const [searchParams] = useSearchParams();
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
@@ -16,6 +28,13 @@ const Results = () => {
     .split(/,| and /i)
     .map((symptom) => symptom.trim())
     .filter(Boolean);
+  const hasHeadache = symptomList.some((symptom) => symptom.toLowerCase().includes("headache"));
+  const medications = hasHeadache
+    ? headacheMedications
+    : ["Medication suggestions appear here for supported symptoms. For now, use a licensed clinician or pharmacist for treatment choices."];
+  const precautions = hasHeadache
+    ? headachePrecautions
+    : ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -70,6 +89,38 @@ const Results = () => {
             </p>
           </section>
         </motion.div>
+
+        <motion.section
+          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+          variants={fadeUp}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                <Pill className="size-5 text-hero-tint" />
+                <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+              </div>
+              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                {medications.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                <ShieldPlus className="size-5 text-accent" />
+                <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+              </div>
+              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                {precautions.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </motion.section>
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
