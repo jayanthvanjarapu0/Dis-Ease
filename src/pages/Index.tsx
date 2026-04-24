@@ -38,7 +38,10 @@ const Index = () => {
             Dis-Ease AI-supported health guidance
           </div>
           <h1 className="mx-auto max-w-[980px] font-geist text-[52px] font-medium leading-[0.95] tracking-[-0.04em] text-foreground md:text-[80px]">
-            Dis-Ease <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">care guidance</span> for your symptoms
+            <span className="block">Dis-Ease</span>
+            <span className="block">
+              <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">care guidance</span> for your symptoms
+            </span>
           </h1>
         </motion.div>
 
