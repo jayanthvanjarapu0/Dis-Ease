@@ -1,0 +1,91 @@
+import { motion } from "motion/react";
+import { AlertTriangle, ArrowLeft, ClipboardCheck, Stethoscope } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0 },
+};
+
+const Results = () => {
+  const [searchParams] = useSearchParams();
+  const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
+  const symptomList = symptoms
+    .split(/,| and /i)
+    .map((symptom) => symptom.trim())
+    .filter(Boolean);
+
+  return (
+    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
+      <motion.section
+        className="mx-auto flex w-full max-w-[1200px] flex-col gap-8 pt-16"
+        initial="hidden"
+        animate="show"
+        transition={{ staggerChildren: 0.12, delayChildren: 0.05 }}
+      >
+        <motion.div variants={fadeUp} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
+          <Button asChild variant="ghost" className="mb-8 rounded-pill">
+            <Link to="/">
+              <ArrowLeft className="size-4" />
+              New check
+            </Link>
+          </Button>
+          <div className="inline-flex items-center gap-2 rounded-pill border border-border bg-hero-shell px-4 py-2 text-sm font-medium text-hero-slate shadow-email">
+            <ClipboardCheck className="size-4 text-hero-tint" />
+            First-pass symptom checkout
+          </div>
+          <h1 className="mt-5 max-w-[900px] font-geist text-[46px] font-medium leading-none tracking-[-0.04em] md:text-[76px]">
+            Summary for <span className="font-instrument italic tracking-normal">{symptoms}</span>
+          </h1>
+        </motion.div>
+
+        <motion.div
+          className="grid gap-4 md:grid-cols-[1.15fr_0.85fr]"
+          variants={fadeUp}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <section className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email">
+            <div className="mb-5 flex items-center gap-3 text-hero-slate">
+              <Stethoscope className="size-5 text-hero-tint" />
+              <h2 className="font-geist text-xl font-medium text-foreground">Reported symptoms</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {symptomList.map((symptom) => (
+                <span key={symptom} className="rounded-pill border border-border bg-background/70 px-4 py-2 text-sm text-hero-slate">
+                  {symptom}
+                </span>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email">
+            <div className="mb-4 flex items-center gap-3 text-hero-slate">
+              <AlertTriangle className="size-5 text-accent" />
+              <h2 className="font-geist text-xl font-medium text-foreground">Urgency check</h2>
+            </div>
+            <p className="text-sm leading-6 text-hero-slate/80">
+              If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.
+            </p>
+          </section>
+        </motion.div>
+
+        <motion.section
+          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+          variants={fadeUp}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <h2 className="mb-4 font-geist text-xl font-medium text-foreground">Suggested next steps</h2>
+          <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
+            <li>Track when symptoms started, intensity, triggers, and any medications taken.</li>
+            <li>Book a licensed clinician review for diagnosis and personalized treatment.</li>
+            <li>Avoid self-prescribing antibiotics, steroids, or controlled medication.</li>
+          </ul>
+        </motion.section>
+      </motion.section>
+    </main>
+  );
+};
+
+export default Results;
