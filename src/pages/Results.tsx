@@ -231,24 +231,6 @@ const Results = () => {
             <p>Bring your ID, medication list, allergies, and the symptom summary from this check.</p>
           </div>
         </motion.section>
-                  <MapPin className="size-4" />
-                  Find hospitals
-                </a>
-              </Button>
-              <Button asChild variant="outline" className="rounded-pill">
-                <a href="tel:112">
-                  <Phone className="size-4" />
-                  Call emergency
-                </a>
-              </Button>
-            </div>
-          </div>
-          <div className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
-            <p>Use your phone maps to choose the closest open hospital or emergency room.</p>
-            <p>Do not drive yourself if you feel faint, confused, weak, or are actively bleeding/vomiting.</p>
-            <p>Bring your ID, medication list, allergies, and the symptom summary from this check.</p>
-          </div>
-        </motion.section>
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
