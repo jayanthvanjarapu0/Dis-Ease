@@ -4,6 +4,7 @@ import { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const videoUrl =
   "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260302_085640_276ea93b-d7da-4418-a09b-2aa5b490e838.mp4";
@@ -15,6 +16,7 @@ const fadeUp = {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSymptomSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,12 +52,12 @@ const Index = () => {
         <motion.div variants={fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
           <div className="mb-5 inline-flex items-center gap-2 rounded-pill border border-border bg-hero-shell/80 px-4 py-2 text-sm font-medium text-hero-slate shadow-email backdrop-blur-md">
             <ShieldCheck className="size-4 text-hero-tint" />
-            Dis-Ease AI-supported health guidance
+            {t("home.tagline")}
           </div>
           <h1 className="mx-auto max-w-[980px] font-geist text-[52px] font-medium leading-[0.95] tracking-[-0.04em] text-foreground md:text-[80px]">
-            <span className="block font-serif">Dis-Ease</span>
+            <span className="block font-serif">{t("home.title1")}</span>
             <span className="block">
-              <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">care guidance</span> for your symptoms
+              <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">{t("home.title2")}</span> {t("home.title3")}
             </span>
           </h1>
         </motion.div>
@@ -65,7 +67,7 @@ const Index = () => {
           variants={fadeUp}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          Explore possible conditions, understand urgency, and prepare safer next steps before speaking with a licensed clinician.
+          {t("home.subtitle")}
         </motion.p>
 
         <motion.div
@@ -81,12 +83,12 @@ const Index = () => {
               id="symptoms"
               type="search"
               name="symptoms"
-              placeholder="Search your symptoms"
+              placeholder={t("home.searchPlaceholder")}
               className="min-h-12 flex-1 rounded-pill bg-transparent px-5 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
             />
             <Button type="submit" variant="gloss" size="hero">
               <Search className="size-4" />
-              Start Check
+              {t("home.startCheck")}
             </Button>
           </form>
 
@@ -96,11 +98,11 @@ const Index = () => {
                 <Star key={index} className="size-4 fill-current" />
               ))}
             </div>
-            <span>1,020+ Reviews</span>
+            <span>{t("home.reviews")}</span>
           </div>
 
           <p className="max-w-[520px] text-xs leading-5 text-muted-foreground">
-            Not a replacement for professional medical advice, diagnosis, treatment, or emergency care.
+            {t("home.footer")}
           </p>
         </motion.div>
       </motion.section>
