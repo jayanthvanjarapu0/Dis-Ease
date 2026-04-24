@@ -335,6 +335,9 @@ const Results = () => {
                   <Pill className="size-5 text-hero-tint" />
                   <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
                 </div>
+                <p className="mb-4 text-sm leading-6 text-hero-slate/80">
+                  {medicationIntro}
+                </p>
                 <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
                   {medications.map((item) => (
                     <li key={item}>{item}</li>
