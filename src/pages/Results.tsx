@@ -1,10 +1,15 @@
 import { motion } from "motion/react";
-import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ClipboardCheck, Download, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { analyzeSymptoms } from "@/lib/symptomAnalysis";
+import { generateMedicalReport } from "@/lib/pdfReport";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -200,11 +205,14 @@ const symptomFollowUps = [
 
 const Results = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
+  const { profile, user } = useAuth();
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "denied" | "unsupported">("idle");
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedFollowUps, setSelectedFollowUps] = useState<string[]>([]);
   const [showMedicationOptions, setShowMedicationOptions] = useState(false);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
+  const analysis = useMemo(() => analyzeSymptoms(symptoms), [symptoms]);
   const symptomList = symptoms
     .split(/,| and /i)
     .map((symptom) => symptom.trim())
@@ -244,6 +252,31 @@ const Results = () => {
     setShowMedicationOptions(false);
   }, [symptoms]);
 
+  // Save to history once per symptom load
+  useEffect(() => {
+    if (!user || !symptoms || symptoms === "Your symptoms") return;
+    supabase.from("symptom_searches").insert({
+      user_id: user.id,
+      symptoms,
+      predicted_disease: analysis.predictedDisease,
+      severity: analysis.severity,
+    }).then(({ error }) => { if (error) console.error("history save failed", error); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, symptoms]);
+
+  const handleDownloadReport = () => {
+    generateMedicalReport({
+      profile,
+      symptoms,
+      predictedDisease: analysis.predictedDisease,
+      severity: analysis.severity,
+      precautions,
+      medications,
+      disclaimer:
+        "This app is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor.",
+    });
+  };
+
   const requestNearbyHospitals = () => {
     if (!("geolocation" in navigator)) {
       setLocationStatus("unsupported");
@@ -276,19 +309,33 @@ const Results = () => {
         transition={{ staggerChildren: 0.12, delayChildren: 0.05 }}
       >
         <motion.div variants={fadeUp} transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-          <Button asChild variant="ghost" className="mb-8 rounded-pill">
-            <Link to="/">
-              <ArrowLeft className="size-4" />
-              New check
-            </Link>
-          </Button>
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+            <Button asChild variant="ghost" className="rounded-pill">
+              <Link to="/">
+                <ArrowLeft className="size-4" />
+                {t("results.newCheck")}
+              </Link>
+            </Button>
+            <Button onClick={handleDownloadReport} className="rounded-pill" variant="default">
+              <Download className="size-4" />
+              {t("results.downloadReport")}
+            </Button>
+          </div>
           <div className="inline-flex items-center gap-2 rounded-pill border border-border bg-hero-shell px-4 py-2 text-sm font-medium text-hero-slate shadow-email">
             <ClipboardCheck className="size-4 text-hero-tint" />
-            First-pass symptom checkout
+            {t("results.firstPass")}
           </div>
           <h1 className="mt-5 max-w-[900px] font-geist text-[46px] font-medium leading-none tracking-[-0.04em] md:text-[76px]">
-            Summary for <span className="font-instrument italic tracking-normal">{symptoms}</span>
+            {t("results.summaryFor")} <span className="font-instrument italic tracking-normal">{symptoms}</span>
           </h1>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
+              {t("results.predicted")}: <span className="font-medium text-foreground">{analysis.predictedDisease}</span>
+            </span>
+            <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
+              {t("results.severity")}: <span className="font-medium text-accent">{analysis.severity}</span>
+            </span>
+          </div>
         </motion.div>
 
         <motion.div
@@ -299,7 +346,7 @@ const Results = () => {
           <section className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email">
             <div className="mb-5 flex items-center gap-3 text-hero-slate">
               <Stethoscope className="size-5 text-hero-tint" />
-              <h2 className="font-geist text-xl font-medium text-foreground">Reported symptoms</h2>
+              <h2 className="font-geist text-xl font-medium text-foreground">{t("results.reportedSymptoms")}</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {symptomList.map((symptom) => (
@@ -313,7 +360,7 @@ const Results = () => {
           <section className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email">
             <div className="mb-4 flex items-center gap-3 text-hero-slate">
               <AlertTriangle className="size-5 text-accent" />
-              <h2 className="font-geist text-xl font-medium text-foreground">Urgency check</h2>
+              <h2 className="font-geist text-xl font-medium text-foreground">{t("results.urgencyCheck")}</h2>
             </div>
             <p className="text-sm leading-6 text-hero-slate/80">
               {urgencyMessage}
@@ -328,7 +375,7 @@ const Results = () => {
         >
           <div className="mb-5 flex items-center gap-3 text-hero-slate">
             <ClipboardCheck className="size-5 text-hero-tint" />
-            <h2 className="font-geist text-xl font-medium text-foreground">What else are you going through?</h2>
+            <h2 className="font-geist text-xl font-medium text-foreground">{t("results.followUp")}</h2>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {followUpSymptoms.map((item) => (
@@ -347,7 +394,7 @@ const Results = () => {
             </p>
           )}
           <Button className="mt-5 rounded-pill" onClick={() => setShowMedicationOptions(true)}>
-            Submit
+            {t("results.submit")}
           </Button>
         </motion.section>
 
@@ -361,13 +408,13 @@ const Results = () => {
               <div>
                 <div className="mb-4 flex items-center gap-3 text-hero-slate">
                   <Pill className="size-5 text-hero-tint" />
-                  <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+                  <h2 className="font-geist text-xl font-medium text-foreground">{t("results.medications")}</h2>
                 </div>
                 <p className="mb-4 text-sm leading-6 text-hero-slate/80">
                   {medicationIntro}
                 </p>
                 <div className="mb-5 rounded-[8px] border border-border bg-background/70 p-4">
-                  <h3 className="mb-3 font-geist text-base font-medium text-foreground">Possible causes</h3>
+                  <h3 className="mb-3 font-geist text-base font-medium text-foreground">{t("results.causes")}</h3>
                   <ul className="grid gap-2 text-sm leading-6 text-hero-slate/80">
                     {possibleCauses.map((item) => (
                       <li key={item}>{item}</li>
@@ -381,7 +428,7 @@ const Results = () => {
                 </ul>
                 {selectedFollowUps.length === 0 && (
                   <div className="mt-5 rounded-[8px] border border-border bg-background/70 p-4">
-                    <h3 className="mb-3 font-geist text-base font-medium text-foreground">Tablet timings</h3>
+                    <h3 className="mb-3 font-geist text-base font-medium text-foreground">{t("results.tabletTimings")}</h3>
                     <ul className="grid gap-2 text-sm leading-6 text-hero-slate/80">
                       {tabletTimings.map((item) => (
                         <li key={item}>{item}</li>
@@ -394,7 +441,7 @@ const Results = () => {
               <div>
                 <div className="mb-4 flex items-center gap-3 text-hero-slate">
                   <ShieldPlus className="size-5 text-accent" />
-                  <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+                  <h2 className="font-geist text-xl font-medium text-foreground">{t("results.precautions")}</h2>
                 </div>
                 <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
                   {precautions.map((item) => (
@@ -415,7 +462,7 @@ const Results = () => {
             <div>
               <div className="mb-3 flex items-center gap-3 text-hero-slate">
                 <MapPin className="size-5 text-hero-tint" />
-                <h2 className="font-geist text-xl font-medium text-foreground">Local hospitals near me</h2>
+                <h2 className="font-geist text-xl font-medium text-foreground">{t("results.hospitals")}</h2>
               </div>
               <p className="max-w-[720px] text-sm leading-6 text-hero-slate/80">
                 Allow location access to open hospitals around your current position, not a generic map search.
@@ -434,20 +481,20 @@ const Results = () => {
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button className="rounded-pill" onClick={requestNearbyHospitals} disabled={locationStatus === "loading"}>
                 <MapPin className="size-4" />
-                {locationStatus === "loading" ? "Finding hospitals" : "Use my location"}
+                {locationStatus === "loading" ? t("results.findingHospitals") : t("results.useLocation")}
               </Button>
               {locationStatus === "ready" && (
                 <Button asChild variant="outline" className="rounded-pill">
                   <a href={hospitalMapsUrl} target="_blank" rel="noreferrer">
                     <MapPin className="size-4" />
-                    Open map
+                    {t("results.openMap")}
                   </a>
                 </Button>
               )}
               <Button asChild variant={locationStatus === "ready" ? "ghost" : "outline"} className="rounded-pill">
                 <a href="tel:108">
                   <Phone className="size-4" />
-                  Call emergency
+                  {t("results.callEmergency")}
                 </a>
               </Button>
             </div>
@@ -468,7 +515,7 @@ const Results = () => {
           variants={fadeUp}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h2 className="mb-4 font-geist text-xl font-medium text-foreground">Suggested next steps</h2>
+          <h2 className="mb-4 font-geist text-xl font-medium text-foreground">{t("results.nextSteps")}</h2>
           <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
             <li>Track when symptoms started, intensity, triggers, and any medications taken.</li>
             <li>Book a licensed clinician review for diagnosis and personalized treatment.</li>
