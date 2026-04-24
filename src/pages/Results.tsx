@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -35,13 +35,33 @@ const bloodVomitingPrecautions = [
   "Bring a list of medications, alcohol use, ulcers/liver disease history, and any blood thinners to the hospital.",
 ];
 
-const followUpSymptoms = [
-  "Dizziness or fainting",
-  "Black or tar-like stools",
-  "Severe stomach pain",
-  "Chest pain or trouble breathing",
-  "Large amount of blood",
-  "Repeated vomiting",
+const defaultFollowUps = ["Fever", "Severe pain", "Weakness or fainting", "Trouble breathing", "Repeated vomiting", "Symptoms getting worse"];
+
+const symptomFollowUps = [
+  {
+    match: /headache|migraine/i,
+    items: ["Fever or stiff neck", "Blurred vision", "Vomiting", "Weakness or numbness", "Head injury", "Worst headache suddenly"],
+  },
+  {
+    match: /blood.*vomit|vomit.*blood|vomiting|vomtings|throwing up/i,
+    items: ["Dizziness or fainting", "Black or tar-like stools", "Severe stomach pain", "Chest pain or trouble breathing", "Large amount of blood", "Repeated vomiting"],
+  },
+  {
+    match: /dizziness|vertigo|faint/i,
+    items: ["Chest pain", "Trouble breathing", "Severe headache", "One-sided weakness", "Palpitations", "Vomiting or dehydration"],
+  },
+  {
+    match: /fever|temperature/i,
+    items: ["Stiff neck", "Rash", "Breathing trouble", "Severe dehydration", "Confusion", "Fever above 103°F / 39.4°C"],
+  },
+  {
+    match: /cough|cold|sore throat/i,
+    items: ["Shortness of breath", "Chest pain", "High fever", "Wheezing", "Blood in cough", "Symptoms over 7 days"],
+  },
+  {
+    match: /stomach|abdominal|diarrhea|loose motion/i,
+    items: ["Severe belly pain", "Blood in stool", "Repeated vomiting", "Signs of dehydration", "High fever", "Pregnancy"],
+  },
 ];
 
 const Results = () => {
@@ -49,6 +69,7 @@ const Results = () => {
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "denied" | "unsupported">("idle");
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedFollowUps, setSelectedFollowUps] = useState<string[]>([]);
+  const [showMedicationOptions, setShowMedicationOptions] = useState(false);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
   const symptomList = symptoms
     .split(/,| and /i)
@@ -71,6 +92,7 @@ const Results = () => {
   const urgencyMessage = hasBloodVomiting
     ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
     : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
+  const followUpSymptoms = symptomFollowUps.find((group) => group.match.test(symptoms))?.items ?? defaultFollowUps;
   const hospitalMapsUrl = useMemo(() => {
     if (!coordinates) return "https://www.google.com/maps/search/hospitals";
 
@@ -80,6 +102,11 @@ const Results = () => {
   const toggleFollowUp = (item: string) => {
     setSelectedFollowUps((current) => current.includes(item) ? current.filter((symptom) => symptom !== item) : [...current, item]);
   };
+
+  useEffect(() => {
+    setSelectedFollowUps([]);
+    setShowMedicationOptions(false);
+  }, [symptoms]);
 
   const requestNearbyHospitals = () => {
     if (!("geolocation" in navigator)) {
@@ -183,39 +210,44 @@ const Results = () => {
               These additional symptoms may need urgent attention. Please call 108 or go to the nearest emergency department if they are severe or worsening.
             </p>
           )}
+          <Button className="mt-5 rounded-pill" onClick={() => setShowMedicationOptions(true)}>
+            Submit
+          </Button>
         </motion.section>
 
-        <motion.section
-          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
-          variants={fadeUp}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <div className="mb-4 flex items-center gap-3 text-hero-slate">
-                <Pill className="size-5 text-hero-tint" />
-                <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+        {showMedicationOptions && (
+          <motion.section
+            className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                  <Pill className="size-5 text-hero-tint" />
+                  <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+                </div>
+                <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                  {medications.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
-                {medications.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
 
-            <div>
-              <div className="mb-4 flex items-center gap-3 text-hero-slate">
-                <ShieldPlus className="size-5 text-accent" />
-                <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+              <div>
+                <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                  <ShieldPlus className="size-5 text-accent" />
+                  <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+                </div>
+                <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                  {precautions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
-                {precautions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
+        )}
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
