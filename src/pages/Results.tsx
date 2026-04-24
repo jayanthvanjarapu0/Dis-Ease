@@ -214,7 +214,7 @@ const Results = () => {
                 </Button>
               )}
               <Button asChild variant={locationStatus === "ready" ? "ghost" : "outline"} className="rounded-pill">
-                <a href="tel:112">
+                <a href="tel:108">
                   <Phone className="size-4" />
                   Call emergency
                 </a>
