@@ -23,6 +23,12 @@ const headachePrecautions = [
   "Seek urgent care for sudden worst-ever headache, fever with stiff neck, weakness, confusion, vision loss, head injury, or repeated vomiting.",
 ];
 
+const headacheTabletTimings = [
+  "Paracetamol: usually after food, every 6–8 hours only if needed; do not exceed the package daily limit.",
+  "Ibuprofen: only after food, usually every 8 hours if safe for you; avoid on an empty stomach.",
+  "Do not combine pain tablets without advice from a doctor or pharmacist.",
+];
+
 const bloodVomitingMedications = [
   "Vomiting blood is an emergency symptom — do not self-medicate at home.",
   "Avoid aspirin, ibuprofen, naproxen, alcohol, and blood-thinning medicines unless an emergency clinician tells you otherwise.",
@@ -33,6 +39,17 @@ const bloodVomitingPrecautions = [
   "Sit upright or lie on your side to reduce choking risk while waiting for help.",
   "Seek emergency care immediately, especially with black stools, dizziness, weakness, severe belly pain, chest pain, or large amounts of blood.",
   "Bring a list of medications, alcohol use, ulcers/liver disease history, and any blood thinners to the hospital.",
+];
+
+const bloodVomitingTabletTimings = [
+  "Do not take tablets at home for blood vomiting unless an emergency clinician tells you to.",
+  "Call 108 or go to the nearest emergency department immediately.",
+];
+
+const defaultTabletTimings = [
+  "For common over-the-counter medicines, follow the label timing exactly or ask a licensed pharmacist.",
+  "Take tablets after food when the label says so, and avoid repeating doses early.",
+  "If symptoms are severe or worsening, do not delay care for medication timing.",
 ];
 
 const defaultFollowUps = ["Fever", "Severe pain", "Weakness or fainting", "Trouble breathing", "Repeated vomiting", "Symptoms getting worse"];
@@ -89,6 +106,7 @@ const Results = () => {
     : hasBloodVomiting
       ? bloodVomitingPrecautions
     : ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
+  const tabletTimings = hasHeadache ? headacheTabletTimings : hasBloodVomiting ? bloodVomitingTabletTimings : defaultTabletTimings;
   const urgencyMessage = hasBloodVomiting
     ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
     : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
@@ -232,6 +250,16 @@ const Results = () => {
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
+                {selectedFollowUps.length === 0 && (
+                  <div className="mt-5 rounded-[8px] border border-border bg-background/70 p-4">
+                    <h3 className="mb-3 font-geist text-base font-medium text-foreground">Tablet timings</h3>
+                    <ul className="grid gap-2 text-sm leading-6 text-hero-slate/80">
+                      {tabletTimings.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div>
