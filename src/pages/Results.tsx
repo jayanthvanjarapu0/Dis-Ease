@@ -210,39 +210,44 @@ const Results = () => {
               These additional symptoms may need urgent attention. Please call 108 or go to the nearest emergency department if they are severe or worsening.
             </p>
           )}
+          <Button className="mt-5 rounded-pill" onClick={() => setShowMedicationOptions(true)}>
+            Submit
+          </Button>
         </motion.section>
 
-        <motion.section
-          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
-          variants={fadeUp}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <div className="mb-4 flex items-center gap-3 text-hero-slate">
-                <Pill className="size-5 text-hero-tint" />
-                <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+        {showMedicationOptions && (
+          <motion.section
+            className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                  <Pill className="size-5 text-hero-tint" />
+                  <h2 className="font-geist text-xl font-medium text-foreground">Medication options</h2>
+                </div>
+                <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                  {medications.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
-                {medications.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
 
-            <div>
-              <div className="mb-4 flex items-center gap-3 text-hero-slate">
-                <ShieldPlus className="size-5 text-accent" />
-                <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+              <div>
+                <div className="mb-4 flex items-center gap-3 text-hero-slate">
+                  <ShieldPlus className="size-5 text-accent" />
+                  <h2 className="font-geist text-xl font-medium text-foreground">Precautions</h2>
+                </div>
+                <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
+                  {precautions.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
-                {precautions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
+        )}
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
