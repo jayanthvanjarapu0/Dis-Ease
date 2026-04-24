@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ShieldCheck, Sparkles, Star } from "lucide-react";
+import { Search, ShieldCheck, Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -59,18 +59,19 @@ const Index = () => {
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
           <form className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
-            <label className="sr-only" htmlFor="email">
-              Email address
+            <label className="sr-only" htmlFor="symptoms">
+              Search symptoms
             </label>
             <input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
+              id="symptoms"
+              type="search"
+              name="symptoms"
+              placeholder="Search your symptoms"
               className="min-h-12 flex-1 rounded-pill bg-transparent px-5 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
             />
-            <Button type="button" variant="gloss" size="hero">
-              <Sparkles className="size-4" />
-              Create Free Account
+            <Button type="submit" variant="gloss" size="hero">
+              <Search className="size-4" />
+              Start Check
             </Button>
           </form>
 
