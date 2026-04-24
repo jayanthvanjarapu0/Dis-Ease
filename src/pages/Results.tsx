@@ -35,7 +35,7 @@ const bloodVomitingPrecautions = [
   "Bring a list of medications, alcohol use, ulcers/liver disease history, and any blood thinners to the hospital.",
 ];
 
-const bloodVomitingFollowUps = [
+const followUpSymptoms = [
   "Dizziness or fainting",
   "Black or tar-like stools",
   "Severe stomach pain",
@@ -158,34 +158,32 @@ const Results = () => {
           </section>
         </motion.div>
 
-        {hasBloodVomiting && (
-          <motion.section
-            className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
-            variants={fadeUp}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="mb-5 flex items-center gap-3 text-hero-slate">
-              <ClipboardCheck className="size-5 text-hero-tint" />
-              <h2 className="font-geist text-xl font-medium text-foreground">What else are you going through?</h2>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {bloodVomitingFollowUps.map((item) => (
-                <label
-                  key={item}
-                  className="flex min-h-14 cursor-pointer items-center gap-3 rounded-[8px] border border-border bg-background/70 px-4 py-3 text-sm text-hero-slate transition-colors hover:bg-background"
-                >
-                  <Checkbox checked={selectedFollowUps.includes(item)} onCheckedChange={() => toggleFollowUp(item)} />
-                  <span>{item}</span>
-                </label>
-              ))}
-            </div>
-            {selectedFollowUps.length > 0 && (
-              <p className="mt-4 text-sm leading-6 text-accent">
-                These symptoms can make blood vomiting more urgent. Please call 108 or go to the nearest emergency department now.
-              </p>
-            )}
-          </motion.section>
-        )}
+        <motion.section
+          className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+          variants={fadeUp}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div className="mb-5 flex items-center gap-3 text-hero-slate">
+            <ClipboardCheck className="size-5 text-hero-tint" />
+            <h2 className="font-geist text-xl font-medium text-foreground">What else are you going through?</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {followUpSymptoms.map((item) => (
+              <label
+                key={item}
+                className="flex min-h-14 cursor-pointer items-center gap-3 rounded-[8px] border border-border bg-background/70 px-4 py-3 text-sm text-hero-slate transition-colors hover:bg-background"
+              >
+                <Checkbox checked={selectedFollowUps.includes(item)} onCheckedChange={() => toggleFollowUp(item)} />
+                <span>{item}</span>
+              </label>
+            ))}
+          </div>
+          {selectedFollowUps.length > 0 && (
+            <p className="mt-4 text-sm leading-6 text-accent">
+              These additional symptoms may need urgent attention. Please call 108 or go to the nearest emergency department if they are severe or worsening.
+            </p>
+          )}
+        </motion.section>
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
