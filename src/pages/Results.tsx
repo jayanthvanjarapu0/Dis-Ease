@@ -69,6 +69,7 @@ const Results = () => {
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "denied" | "unsupported">("idle");
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedFollowUps, setSelectedFollowUps] = useState<string[]>([]);
+  const [showMedicationOptions, setShowMedicationOptions] = useState(false);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
   const symptomList = symptoms
     .split(/,| and /i)
@@ -91,6 +92,7 @@ const Results = () => {
   const urgencyMessage = hasBloodVomiting
     ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
     : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
+  const followUpSymptoms = symptomFollowUps.find((group) => group.match.test(symptoms))?.items ?? defaultFollowUps;
   const hospitalMapsUrl = useMemo(() => {
     if (!coordinates) return "https://www.google.com/maps/search/hospitals";
 
@@ -100,6 +102,11 @@ const Results = () => {
   const toggleFollowUp = (item: string) => {
     setSelectedFollowUps((current) => current.includes(item) ? current.filter((symptom) => symptom !== item) : [...current, item]);
   };
+
+  useEffect(() => {
+    setSelectedFollowUps([]);
+    setShowMedicationOptions(false);
+  }, [symptoms]);
 
   const requestNearbyHospitals = () => {
     if (!("geolocation" in navigator)) {
