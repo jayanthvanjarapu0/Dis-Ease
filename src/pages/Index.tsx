@@ -35,10 +35,10 @@ const Index = () => {
         <motion.div variants={fadeUp} transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}>
           <div className="mb-5 inline-flex items-center gap-2 rounded-pill border border-border bg-hero-shell/80 px-4 py-2 text-sm font-medium text-hero-slate shadow-email backdrop-blur-md">
             <ShieldCheck className="size-4 text-hero-tint" />
-            AI-supported health guidance
+            Dis-Ease AI-supported health guidance
           </div>
           <h1 className="mx-auto max-w-[980px] font-geist text-[52px] font-medium leading-[0.95] tracking-[-0.04em] text-foreground md:text-[80px]">
-            Simple <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">care guidance</span> for your symptoms
+            Dis-Ease <span className="font-instrument text-[66px] italic leading-none tracking-normal md:text-[100px]">care guidance</span> for your symptoms
           </h1>
         </motion.div>
 
