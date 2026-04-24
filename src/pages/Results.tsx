@@ -218,6 +218,10 @@ const Results = () => {
     "Use simple supportive care like rest, fluids, and monitoring unless a clinician recommends a specific tablet.",
     "Avoid antibiotics, steroids, or strong painkillers without a prescription.",
   ];
+  const possibleCauses = medicationGuide?.causes ?? [
+    `Possible causes of ${symptoms} can vary from mild issues like dehydration, infection, strain, or digestion problems to conditions that need medical care.`,
+    "A clinician can confirm the exact cause based on duration, severity, age, medical history, and examination.",
+  ];
   const precautions = medicationGuide?.precautions ?? ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
   const tabletTimings = medicationGuide?.tabletTimings ?? defaultTabletTimings;
   const medicationIntro = medicationGuide?.intro ?? `For ${symptoms}, medication choices depend on cause, age, allergies, and existing health conditions.`;
@@ -362,6 +366,14 @@ const Results = () => {
                 <p className="mb-4 text-sm leading-6 text-hero-slate/80">
                   {medicationIntro}
                 </p>
+                <div className="mb-5 rounded-[8px] border border-border bg-background/70 p-4">
+                  <h3 className="mb-3 font-geist text-base font-medium text-foreground">Possible causes</h3>
+                  <ul className="grid gap-2 text-sm leading-6 text-hero-slate/80">
+                    {possibleCauses.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
                 <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80">
                   {medications.map((item) => (
                     <li key={item}>{item}</li>
