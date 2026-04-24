@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
 import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,8 @@ const bloodVomitingPrecautions = [
 
 const Results = () => {
   const [searchParams] = useSearchParams();
+  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "denied" | "unsupported">("idle");
+  const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
   const symptomList = symptoms
     .split(/,| and /i)
@@ -57,6 +60,34 @@ const Results = () => {
   const urgencyMessage = hasBloodVomiting
     ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
     : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
+  const hospitalMapsUrl = useMemo(() => {
+    if (!coordinates) return "https://www.google.com/maps/search/hospitals";
+
+    return `https://www.google.com/maps/search/hospitals/@${coordinates.latitude},${coordinates.longitude},14z`;
+  }, [coordinates]);
+
+  const requestNearbyHospitals = () => {
+    if (!("geolocation" in navigator)) {
+      setLocationStatus("unsupported");
+      return;
+    }
+
+    setLocationStatus("loading");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextCoordinates = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        setCoordinates(nextCoordinates);
+        setLocationStatus("ready");
+        window.open(`https://www.google.com/maps/search/hospitals/@${nextCoordinates.latitude},${nextCoordinates.longitude},14z`, "_blank", "noreferrer");
+      },
+      () => setLocationStatus("denied"),
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
+    );
+  };
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -156,12 +187,50 @@ const Results = () => {
                 <h2 className="font-geist text-xl font-medium text-foreground">Local hospitals near me</h2>
               </div>
               <p className="max-w-[720px] text-sm leading-6 text-hero-slate/80">
-                If this feels urgent, contact emergency services or go to the nearest emergency department immediately.
+                Allow location access to open hospitals around your current position, not a generic map search.
               </p>
+              {locationStatus === "denied" && (
+                <p className="mt-2 max-w-[720px] text-sm leading-6 text-accent">
+                  Location permission was blocked. Enable it in your browser settings or call emergency services now.
+                </p>
+              )}
+              {locationStatus === "unsupported" && (
+                <p className="mt-2 max-w-[720px] text-sm leading-6 text-accent">
+                  This browser does not support location sharing. Call emergency services if this is urgent.
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild className="rounded-pill">
-                <a href="https://www.google.com/maps/search/hospitals+near+me" target="_blank" rel="noreferrer">
+              <Button className="rounded-pill" onClick={requestNearbyHospitals} disabled={locationStatus === "loading"}>
+                <MapPin className="size-4" />
+                {locationStatus === "loading" ? "Finding hospitals" : "Use my location"}
+              </Button>
+              {locationStatus === "ready" && (
+                <Button asChild variant="outline" className="rounded-pill">
+                  <a href={hospitalMapsUrl} target="_blank" rel="noreferrer">
+                    <MapPin className="size-4" />
+                    Open map
+                  </a>
+                </Button>
+              )}
+              <Button asChild variant={locationStatus === "ready" ? "ghost" : "outline"} className="rounded-pill">
+                <a href="tel:112">
+                  <Phone className="size-4" />
+                  Call emergency
+                </a>
+              </Button>
+            </div>
+          </div>
+          <div className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
+            <p>
+              {coordinates
+                ? `Map search is centered at ${coordinates.latitude.toFixed(4)}, ${coordinates.longitude.toFixed(4)}.`
+                : "Your exact location is only requested when you tap the location button."}
+            </p>
+            <p>Do not drive yourself if you feel faint, confused, weak, or are actively bleeding/vomiting.</p>
+            <p>Bring your ID, medication list, allergies, and the symptom summary from this check.</p>
+          </div>
+        </motion.section>
                   <MapPin className="size-4" />
                   Find hospitals
                 </a>
