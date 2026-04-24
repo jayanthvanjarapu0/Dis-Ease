@@ -21,6 +21,18 @@ const headachePrecautions = [
   "Seek urgent care for sudden worst-ever headache, fever with stiff neck, weakness, confusion, vision loss, head injury, or repeated vomiting.",
 ];
 
+const bloodVomitingMedications = [
+  "Vomiting blood is an emergency symptom — do not self-medicate at home.",
+  "Avoid aspirin, ibuprofen, naproxen, alcohol, and blood-thinning medicines unless an emergency clinician tells you otherwise.",
+  "Do not take anything by mouth if bleeding is ongoing, vomiting continues, or you feel faint; call emergency services or go to the ER now.",
+];
+
+const bloodVomitingPrecautions = [
+  "Sit upright or lie on your side to reduce choking risk while waiting for help.",
+  "Seek emergency care immediately, especially with black stools, dizziness, weakness, severe belly pain, chest pain, or large amounts of blood.",
+  "Bring a list of medications, alcohol use, ulcers/liver disease history, and any blood thinners to the hospital.",
+];
+
 const Results = () => {
   const [searchParams] = useSearchParams();
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
@@ -29,12 +41,22 @@ const Results = () => {
     .map((symptom) => symptom.trim())
     .filter(Boolean);
   const hasHeadache = symptomList.some((symptom) => symptom.toLowerCase().includes("headache"));
+  const hasBloodVomiting = symptomList.some((symptom) => /blood|vomit|vomiting|vomtings|throwing up/i.test(symptom)) &&
+    /blood/i.test(symptoms) &&
+    /vomit|vomiting|vomtings|throwing up/i.test(symptoms);
   const medications = hasHeadache
     ? headacheMedications
+    : hasBloodVomiting
+      ? bloodVomitingMedications
     : ["Medication suggestions appear here for supported symptoms. For now, use a licensed clinician or pharmacist for treatment choices."];
   const precautions = hasHeadache
     ? headachePrecautions
+    : hasBloodVomiting
+      ? bloodVomitingPrecautions
     : ["Seek urgent care if symptoms are severe, sudden, worsening, or affecting breathing, consciousness, movement, speech, or heavy bleeding."];
+  const urgencyMessage = hasBloodVomiting
+    ? "Vomiting blood can signal internal bleeding. Please seek emergency care now rather than trying home treatment."
+    : "If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.";
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -85,7 +107,7 @@ const Results = () => {
               <h2 className="font-geist text-xl font-medium text-foreground">Urgency check</h2>
             </div>
             <p className="text-sm leading-6 text-hero-slate/80">
-              If symptoms are severe, sudden, worsening, or include chest pain, breathing trouble, fainting, confusion, or heavy bleeding, seek emergency care now.
+              {urgencyMessage}
             </p>
           </section>
         </motion.div>
