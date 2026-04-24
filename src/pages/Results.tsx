@@ -1,10 +1,15 @@
 import { motion } from "motion/react";
-import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ClipboardCheck, Download, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { analyzeSymptoms } from "@/lib/symptomAnalysis";
+import { generateMedicalReport } from "@/lib/pdfReport";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -200,11 +205,14 @@ const symptomFollowUps = [
 
 const Results = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useLanguage();
+  const { profile, user } = useAuth();
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "denied" | "unsupported">("idle");
   const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number } | null>(null);
   const [selectedFollowUps, setSelectedFollowUps] = useState<string[]>([]);
   const [showMedicationOptions, setShowMedicationOptions] = useState(false);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
+  const analysis = useMemo(() => analyzeSymptoms(symptoms), [symptoms]);
   const symptomList = symptoms
     .split(/,| and /i)
     .map((symptom) => symptom.trim())
@@ -243,6 +251,31 @@ const Results = () => {
     setSelectedFollowUps([]);
     setShowMedicationOptions(false);
   }, [symptoms]);
+
+  // Save to history once per symptom load
+  useEffect(() => {
+    if (!user || !symptoms || symptoms === "Your symptoms") return;
+    supabase.from("symptom_searches").insert({
+      user_id: user.id,
+      symptoms,
+      predicted_disease: analysis.predictedDisease,
+      severity: analysis.severity,
+    }).then(({ error }) => { if (error) console.error("history save failed", error); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, symptoms]);
+
+  const handleDownloadReport = () => {
+    generateMedicalReport({
+      profile,
+      symptoms,
+      predictedDisease: analysis.predictedDisease,
+      severity: analysis.severity,
+      precautions,
+      medications,
+      disclaimer:
+        "This app is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified doctor.",
+    });
+  };
 
   const requestNearbyHospitals = () => {
     if (!("geolocation" in navigator)) {
