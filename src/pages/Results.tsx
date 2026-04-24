@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 import { AlertTriangle, ArrowLeft, ClipboardCheck, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -35,13 +35,33 @@ const bloodVomitingPrecautions = [
   "Bring a list of medications, alcohol use, ulcers/liver disease history, and any blood thinners to the hospital.",
 ];
 
-const followUpSymptoms = [
-  "Dizziness or fainting",
-  "Black or tar-like stools",
-  "Severe stomach pain",
-  "Chest pain or trouble breathing",
-  "Large amount of blood",
-  "Repeated vomiting",
+const defaultFollowUps = ["Fever", "Severe pain", "Weakness or fainting", "Trouble breathing", "Repeated vomiting", "Symptoms getting worse"];
+
+const symptomFollowUps = [
+  {
+    match: /headache|migraine/i,
+    items: ["Fever or stiff neck", "Blurred vision", "Vomiting", "Weakness or numbness", "Head injury", "Worst headache suddenly"],
+  },
+  {
+    match: /blood.*vomit|vomit.*blood|vomiting|vomtings|throwing up/i,
+    items: ["Dizziness or fainting", "Black or tar-like stools", "Severe stomach pain", "Chest pain or trouble breathing", "Large amount of blood", "Repeated vomiting"],
+  },
+  {
+    match: /dizziness|vertigo|faint/i,
+    items: ["Chest pain", "Trouble breathing", "Severe headache", "One-sided weakness", "Palpitations", "Vomiting or dehydration"],
+  },
+  {
+    match: /fever|temperature/i,
+    items: ["Stiff neck", "Rash", "Breathing trouble", "Severe dehydration", "Confusion", "Fever above 103°F / 39.4°C"],
+  },
+  {
+    match: /cough|cold|sore throat/i,
+    items: ["Shortness of breath", "Chest pain", "High fever", "Wheezing", "Blood in cough", "Symptoms over 7 days"],
+  },
+  {
+    match: /stomach|abdominal|diarrhea|loose motion/i,
+    items: ["Severe belly pain", "Blood in stool", "Repeated vomiting", "Signs of dehydration", "High fever", "Pregnancy"],
+  },
 ];
 
 const Results = () => {
