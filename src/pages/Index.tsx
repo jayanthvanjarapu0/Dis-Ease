@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
 import { Search, ShieldCheck, Star } from "lucide-react";
+import { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 
@@ -12,6 +14,19 @@ const fadeUp = {
 };
 
 const Index = () => {
+  const navigate = useNavigate();
+
+  const handleSymptomSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const symptoms = String(formData.get("symptoms") || "").trim();
+
+    if (symptoms) {
+      navigate(`/results?symptoms=${encodeURIComponent(symptoms)}`);
+    }
+  };
+
   return (
     <main className="relative flex min-h-screen justify-center overflow-hidden bg-background">
       <div className="absolute inset-x-0 top-0 h-[560px] overflow-hidden" aria-hidden="true">
@@ -58,7 +73,7 @@ const Index = () => {
           variants={fadeUp}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          <form className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
+          <form onSubmit={handleSymptomSubmit} className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
             <label className="sr-only" htmlFor="symptoms">
               Search symptoms
             </label>
