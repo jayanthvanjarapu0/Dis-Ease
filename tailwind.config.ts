@@ -47,6 +47,11 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        hero: {
+          slate: "hsl(var(--hero-slate))",
+          shell: "hsl(var(--hero-shell))",
+          tint: "hsl(var(--hero-video-tint))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -62,6 +67,18 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        pill: "40px",
+      },
+      fontFamily: {
+        geist: ["var(--font-geist)"],
+        instrument: ["var(--font-instrument)"],
+      },
+      boxShadow: {
+        email: "var(--shadow-email)",
+        gloss: "var(--shadow-gloss)",
+      },
+      backgroundImage: {
+        gloss: "var(--gradient-gloss)",
       },
       keyframes: {
         "accordion-down": {

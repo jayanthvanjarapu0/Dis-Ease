@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +11,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 231 11% 13%;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -17,26 +19,34 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 230 13% 9%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 180 17% 95%;
+    --secondary-foreground: 231 11% 13%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 25% 97%;
+    --muted-foreground: 230 12% 25%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 168 54% 45%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 18% 90%;
+    --input: 0 0% 99%;
+    --ring: 168 54% 45%;
 
     --radius: 0.5rem;
+    --hero-slate: 230 12% 25%;
+    --hero-shell: 0 0% 99%;
+    --hero-video-tint: 168 54% 45%;
+    --gradient-gloss: linear-gradient(180deg, hsl(225 14% 18%) 0%, hsl(230 13% 9%) 46%, hsl(220 9% 4%) 100%);
+    --shadow-email: 0px 10px 40px 5px hsl(0 0% 76% / 0.25);
+    --shadow-gloss: inset -4px -6px 25px 0px hsl(0 0% 79% / 0.08), inset 4px 4px 10px 0px hsl(0 0% 11% / 0.24);
+    --font-geist: Geist, ui-sans-serif, system-ui, sans-serif;
+    --font-instrument: "Instrument Serif", Georgia, serif;
 
     --sidebar-background: 0 0% 98%;
 
@@ -100,6 +110,13 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-geist);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
   }
 }
