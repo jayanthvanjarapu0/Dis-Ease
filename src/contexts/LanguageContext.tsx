@@ -41,6 +41,7 @@ const translations = {
     "home.subtitle":
       "Explore possible conditions, understand urgency, and prepare safer next steps before speaking with a licensed clinician.",
     "home.searchPlaceholder": "Search your symptoms",
+    "home.agePlaceholder": "Enter your age",
     "home.startCheck": "Start Check",
     "home.reviews": "1,020+ Reviews",
     "home.footer": "Not a replacement for professional medical advice, diagnosis, treatment, or emergency care.",
@@ -114,6 +115,7 @@ const translations = {
     "home.subtitle":
       "संभावित स्थितियों का पता लगाएँ, तात्कालिकता को समझें और एक लाइसेंस प्राप्त चिकित्सक से बात करने से पहले सुरक्षित अगले कदमों की तैयारी करें।",
     "home.searchPlaceholder": "अपने लक्षण खोजें",
+    "home.agePlaceholder": "अपनी उम्र दर्ज करें",
     "home.startCheck": "जाँच शुरू करें",
     "home.reviews": "1,020+ समीक्षाएँ",
     "home.footer": "यह पेशेवर चिकित्सा सलाह, निदान, उपचार या आपातकालीन देखभाल का विकल्प नहीं है।",

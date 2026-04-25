@@ -23,9 +23,12 @@ const Index = () => {
 
     const formData = new FormData(event.currentTarget);
     const symptoms = String(formData.get("symptoms") || "").trim();
+    const age = String(formData.get("age") || "").trim();
 
     if (symptoms) {
-      navigate(`/results?symptoms=${encodeURIComponent(symptoms)}`);
+      const params = new URLSearchParams({ symptoms });
+      if (age) params.set("age", age);
+      navigate(`/results?${params.toString()}`);
     }
   };
 
@@ -75,21 +78,37 @@ const Index = () => {
           variants={fadeUp}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          <form onSubmit={handleSymptomSubmit} className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
-            <label className="sr-only" htmlFor="symptoms">
-              Search symptoms
-            </label>
-            <input
-              id="symptoms"
-              type="search"
-              name="symptoms"
-              placeholder={t("home.searchPlaceholder")}
-              className="min-h-12 flex-1 rounded-pill bg-transparent px-5 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            />
-            <Button type="submit" variant="gloss" size="hero">
-              <Search className="size-4" />
-              {t("home.startCheck")}
-            </Button>
+          <form onSubmit={handleSymptomSubmit} className="flex w-full flex-col gap-3">
+            <div className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
+              <label className="sr-only" htmlFor="symptoms">
+                Search symptoms
+              </label>
+              <input
+                id="symptoms"
+                type="search"
+                name="symptoms"
+                placeholder={t("home.searchPlaceholder")}
+                className="min-h-12 flex-1 rounded-pill bg-transparent px-5 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              />
+              <Button type="submit" variant="gloss" size="hero">
+                <Search className="size-4" />
+                {t("home.startCheck")}
+              </Button>
+            </div>
+            <div className="flex w-full items-center gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email">
+              <label htmlFor="age" className="pl-4 font-geist text-[14px] font-medium text-hero-slate">
+                {t("auth.age")}
+              </label>
+              <input
+                id="age"
+                type="number"
+                name="age"
+                min={0}
+                max={120}
+                placeholder={t("home.agePlaceholder")}
+                className="min-h-12 flex-1 rounded-pill bg-transparent px-3 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              />
+            </div>
           </form>
 
           <div className="flex items-center gap-3 rounded-pill border border-border bg-background/70 px-4 py-2 text-sm font-medium text-hero-slate backdrop-blur-md">
