@@ -78,8 +78,8 @@ const Index = () => {
           variants={fadeUp}
           transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
         >
-          <form onSubmit={handleSymptomSubmit} className="flex w-full flex-col gap-3">
-            <div className="flex w-full flex-col gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1 sm:flex-row">
+          <form onSubmit={handleSymptomSubmit} className="flex w-full flex-col items-center gap-3">
+            <div className="flex w-full items-center rounded-pill border border-border bg-hero-shell p-2 shadow-email transition-transform duration-300 hover:-translate-y-1">
               <label className="sr-only" htmlFor="symptoms">
                 Search symptoms
               </label>
@@ -90,10 +90,6 @@ const Index = () => {
                 placeholder={t("home.searchPlaceholder")}
                 className="min-h-12 flex-1 rounded-pill bg-transparent px-5 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
-              <Button type="submit" variant="gloss" size="hero">
-                <Search className="size-4" />
-                {t("home.startCheck")}
-              </Button>
             </div>
             <div className="flex w-full items-center gap-3 rounded-pill border border-border bg-hero-shell p-2 shadow-email">
               <label htmlFor="age" className="pl-4 font-geist text-[14px] font-medium text-hero-slate">
@@ -109,6 +105,10 @@ const Index = () => {
                 className="min-h-12 flex-1 rounded-pill bg-transparent px-3 font-geist text-[15px] text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
             </div>
+            <Button type="submit" variant="gloss" size="hero" className="mt-2">
+              <Search className="size-4" />
+              {t("home.startCheck")}
+            </Button>
           </form>
 
           <div className="flex items-center gap-3 rounded-pill border border-border bg-background/70 px-4 py-2 text-sm font-medium text-hero-slate backdrop-blur-md">
