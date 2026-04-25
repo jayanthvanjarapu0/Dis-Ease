@@ -393,6 +393,11 @@ const Results = () => {
             <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
               {t("results.severity")}: <span className="font-medium text-accent">{analysis.severity}</span>
             </span>
+            {hasAge && (
+              <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
+                {t("auth.age")}: <span className="font-medium text-foreground">{ageNumber}</span>
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -425,6 +430,29 @@ const Results = () => {
             </p>
           </section>
         </motion.div>
+
+        {hasAge && ageBand && (
+          <motion.section
+            className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="mb-4 flex flex-wrap items-center gap-3 text-hero-slate">
+              <Baby className="size-5 text-hero-tint" />
+              <h2 className="font-geist text-xl font-medium text-foreground">{t("results.ageTips")}</h2>
+              <span className="rounded-pill border border-border bg-background/70 px-3 py-1 text-xs text-hero-slate">
+                {ageBandLabel[ageBand]}
+              </span>
+            </div>
+            <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
+              {ageTips.map((tip) => (
+                <li key={tip} className="rounded-[8px] border border-border bg-background/70 p-4">
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </motion.section>
+        )}
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
