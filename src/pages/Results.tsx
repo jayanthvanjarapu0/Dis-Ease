@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { AlertTriangle, ArrowLeft, ClipboardCheck, Download, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Baby, ClipboardCheck, Download, MapPin, Phone, Pill, ShieldPlus, Stethoscope } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -176,6 +176,59 @@ const defaultTabletTimings = [
 
 const defaultFollowUps = ["Fever", "Severe pain", "Weakness or fainting", "Trouble breathing", "Repeated vomiting", "Symptoms getting worse"];
 
+type AgeBand = "infant" | "child" | "teen" | "adult" | "middle" | "senior";
+
+const getAgeBand = (age: number): AgeBand => {
+  if (age < 2) return "infant";
+  if (age < 12) return "child";
+  if (age < 18) return "teen";
+  if (age < 40) return "adult";
+  if (age < 60) return "middle";
+  return "senior";
+};
+
+const ageBandLabel: Record<AgeBand, string> = {
+  infant: "Infant (under 2)",
+  child: "Child (2–11)",
+  teen: "Teen (12–17)",
+  adult: "Adult (18–39)",
+  middle: "Middle age (40–59)",
+  senior: "Senior (60+)",
+};
+
+const ageBandTips: Record<AgeBand, string[]> = {
+  infant: [
+    "Infants can become seriously ill quickly — fever, poor feeding, lethargy, or fewer wet diapers needs same-day medical review.",
+    "Avoid giving aspirin or adult-strength painkillers; only use medicines dosed by weight on pediatric advice.",
+    "Watch breathing rate, skin color, and alertness — these change faster than temperature in babies.",
+  ],
+  child: [
+    "Children can dehydrate quickly — offer small frequent sips of water or ORS during fever, vomiting, or loose motions.",
+    "Use weight-based pediatric dosing (e.g., paracetamol syrup) and never give aspirin during viral illness.",
+    "Persistent fever over 3 days, rash, breathing trouble, or refusing fluids needs a clinician review.",
+  ],
+  teen: [
+    "Teens often under-report symptoms — note duration, severity, and any school/sports impact for the clinician.",
+    "Consider menstrual cycle, mental-health stressors, and sleep when interpreting fatigue, headache, or stomach pain.",
+    "Avoid sharing prescription medicines; doses for teens may differ from adult formulations.",
+  ],
+  adult: [
+    "Track symptom onset, triggers, and any medication taken — this helps the clinician narrow the cause faster.",
+    "Lifestyle factors (sleep, hydration, stress, screen time) often amplify common symptoms; address these alongside treatment.",
+    "Do not self-start antibiotics or steroids; most adult viral illnesses settle with supportive care.",
+  ],
+  middle: [
+    "After 40, watch closely for cardiac and metabolic warning signs — chest discomfort, breathlessness, or sudden weakness needs urgent review.",
+    "Check existing conditions (BP, sugar, cholesterol, thyroid) and current medications for interactions before adding new tablets.",
+    "Persistent symptoms beyond a week, unintentional weight changes, or new lumps deserve a clinician visit, not home treatment.",
+  ],
+  senior: [
+    "Older adults can have atypical presentations — confusion, falls, or appetite loss may be the first sign of infection or dehydration.",
+    "Many medicines need dose adjustment for kidney/liver function; confirm with a clinician or pharmacist before starting anything new.",
+    "Seek same-day care for fever, breathlessness, chest pain, sudden weakness, persistent vomiting, or any change in alertness.",
+  ],
+};
+
 const symptomFollowUps = [
   {
     match: /headache|migraine/i,
@@ -212,6 +265,11 @@ const Results = () => {
   const [selectedFollowUps, setSelectedFollowUps] = useState<string[]>([]);
   const [showMedicationOptions, setShowMedicationOptions] = useState(false);
   const symptoms = searchParams.get("symptoms")?.trim() || "Your symptoms";
+  const ageParam = searchParams.get("age");
+  const ageNumber = ageParam ? Number.parseInt(ageParam, 10) : NaN;
+  const hasAge = Number.isFinite(ageNumber) && ageNumber >= 0 && ageNumber <= 120;
+  const ageBand = hasAge ? getAgeBand(ageNumber) : null;
+  const ageTips = ageBand ? ageBandTips[ageBand] : [];
   const analysis = useMemo(() => analyzeSymptoms(symptoms), [symptoms]);
   const symptomList = symptoms
     .split(/,| and /i)
@@ -335,6 +393,11 @@ const Results = () => {
             <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
               {t("results.severity")}: <span className="font-medium text-accent">{analysis.severity}</span>
             </span>
+            {hasAge && (
+              <span className="rounded-pill border border-border bg-hero-shell px-4 py-1.5 text-hero-slate">
+                {t("auth.age")}: <span className="font-medium text-foreground">{ageNumber}</span>
+              </span>
+            )}
           </div>
         </motion.div>
 
@@ -367,6 +430,29 @@ const Results = () => {
             </p>
           </section>
         </motion.div>
+
+        {hasAge && ageBand && (
+          <motion.section
+            className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
+            variants={fadeUp}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="mb-4 flex flex-wrap items-center gap-3 text-hero-slate">
+              <Baby className="size-5 text-hero-tint" />
+              <h2 className="font-geist text-xl font-medium text-foreground">{t("results.ageTips")}</h2>
+              <span className="rounded-pill border border-border bg-background/70 px-3 py-1 text-xs text-hero-slate">
+                {ageBandLabel[ageBand]}
+              </span>
+            </div>
+            <ul className="grid gap-3 text-sm leading-6 text-hero-slate/80 md:grid-cols-3">
+              {ageTips.map((tip) => (
+                <li key={tip} className="rounded-[8px] border border-border bg-background/70 p-4">
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </motion.section>
+        )}
 
         <motion.section
           className="rounded-[8px] border border-border bg-hero-shell p-6 shadow-email"
